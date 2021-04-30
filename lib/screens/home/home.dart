@@ -4,6 +4,7 @@ import 'package:coffeeshoppe/screens/authentication/authentication.dart';
 import 'package:coffeeshoppe/shared/applicationloginstate.dart';
 import 'package:coffeeshoppe/shared/applicationstate.dart';
 import 'package:coffeeshoppe/shared/guestbook.dart';
+import 'package:coffeeshoppe/shared/profilewrapper.dart';
 import 'package:coffeeshoppe/shared/widgets.dart';
 import 'package:coffeeshoppe/shared/yesnoselection.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,16 +18,73 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Consumer<ApplicationState>(
+        builder: (context, appState, _) => Scaffold(
+              appBar: AppBar(
+                title: Text('Alternate Universe: Coffee Shoppe'),
+              ),
+              body: ListView(
+                children: <Widget>[
+                  Image.asset('assets/codelab.png'),
+                  SizedBox(height: 8),
+                  //IconAndDetail(Icons.calendar_today, 'October 30'),
+                  //IconAndDetail(Icons.location_city, 'San Francisco'),
+                  ProfileWrapper(appState: appState),
+                  Divider(
+                    height: 8,
+                    thickness: 1,
+                    indent: 8,
+                    endIndent: 8,
+                    color: Colors.grey,
+                  ),
+                ],
+              ),
+              bottomNavigationBar: BottomAppBar(
+                shape: CircularNotchedRectangle(),
+                color: Colors.blue,
+                child: IconTheme(
+                  data: IconThemeData(
+                      color: Theme.of(context).colorScheme.onPrimary),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        tooltip: "My Books",
+                        icon: const Icon(Icons.book),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        tooltip: "Messages",
+                        icon: const Icon(Icons.message_sharp),
+                        onPressed: () {},
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        tooltip: 'Open navigation menu',
+                        icon: const Icon(Icons.settings),
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        tooltip: 'Open navigation menu',
+                        icon: const Icon(Icons.logout),
+                        onPressed: () {
+                          appState.signOut();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ));
+    /*return Scaffold(
       appBar: AppBar(
-        title: Text('Firebase Meetup'),
+        title: Text('Alternate Universe: Coffee Shoppe'),
       ),
       body: ListView(
         children: <Widget>[
           Image.asset('assets/codelab.png'),
           SizedBox(height: 8),
-          IconAndDetail(Icons.calendar_today, 'October 30'),
-          IconAndDetail(Icons.location_city, 'San Francisco'),
+          //IconAndDetail(Icons.calendar_today, 'October 30'),
+          //IconAndDetail(Icons.location_city, 'San Francisco'),
           Consumer<ApplicationState>(
             builder: (context, appState, _) => Authentication(
               email: appState.email,
@@ -46,41 +104,42 @@ class HomePage extends StatelessWidget {
             endIndent: 8,
             color: Colors.grey,
           ),
-          Header("What we'll be doing"),
-          Paragraph(
-            'Join us for a day full of Firebase Workshops and Pizza!',
-          ),
-          Consumer<ApplicationState>(
-            builder: (context, appState, _) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+
+        ],
+      ),
+        bottomNavigationBar: BottomAppBar(
+          shape: CircularNotchedRectangle(),
+          color: Colors.blue,
+          child: IconTheme(
+            data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+            child: Row(
               children: [
-                // Add from here
-                if (appState.attendees >= 2)
-                  Paragraph('${appState.attendees} people going')
-                else if (appState.attendees == 1)
-                  Paragraph('1 person going')
-                else
-                  Paragraph('No one going'),
-                // To here.
-                if (appState.loginState == ApplicationLoginState.loggedIn) ...[
-                  // Add from here
-                  YesNoSelection(
-                    state: appState.attending,
-                    onSelection: (attending) => appState.attending = attending,
-                  ),
-                  // To here.
-                  Header('Discussion'),
-                  GuestBook(
-                    addMessage: (String message) =>
-                        appState.addMessageToGuestBook(message),
-                    messages: appState.guestBookMessages,
-                  ),
-                ],
+                IconButton(
+                  tooltip: "My Books",
+                  icon: const Icon(Icons.book),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  tooltip: "Messages",
+                  icon: const Icon(Icons.message_sharp),
+                  onPressed: () {},
+                ),
+                const Spacer(),
+                IconButton(
+                  tooltip: 'Open navigation menu',
+                  icon: const Icon(Icons.settings),
+                  onPressed: () {},
+                ),
+                IconButton(
+                  tooltip: 'Open navigation menu',
+                  icon: const Icon(Icons.logout),
+                  onPressed: () {},
+                ),
               ],
             ),
           ),
-        ],
-      ),
-    );
+        ),
+      //floatingActionButton: FloatingActionButton(onPressed: null),
+    );*/
   }
 }

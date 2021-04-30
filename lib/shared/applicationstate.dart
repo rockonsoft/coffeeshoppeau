@@ -1,5 +1,8 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coffeeshoppe/models/book.dart';
+import 'package:coffeeshoppe/models/preferences.dart';
+import 'package:coffeeshoppe/models/profile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,9 +12,12 @@ import 'attending.dart';
 import 'guestbookmessage.dart';
 
 class ApplicationState extends ChangeNotifier {
+
   ApplicationState() {
+    print('ApplicationState::init');
     init();
   }
+  final CollectionReference profileCollection = FirebaseFirestore.instance.collection('profiles');
 
   Future<void> init() async {
     await Firebase.initializeApp();
@@ -29,6 +35,7 @@ class ApplicationState extends ChangeNotifier {
 
     FirebaseAuth.instance.userChanges().listen((user) {
       if (user != null) {
+        _uid = user.uid;
         _loginState = ApplicationLoginState.loggedIn;
         _guestBookSubscription = FirebaseFirestore.instance
             .collection('guestbook')
@@ -44,6 +51,15 @@ class ApplicationState extends ChangeNotifier {
               ),
             );
           });
+
+          //load profile
+          /*_profileSubscription = profileCollection.doc(_uid).snapshots().listen((profileSnapshot) {
+            if(profileSnapshot.exists){
+              _profile = Profile(profileSnapshot.data());
+            }
+
+          });*/
+
           notifyListeners();
         });
         // Add from here
@@ -68,7 +84,8 @@ class ApplicationState extends ChangeNotifier {
         _loginState = ApplicationLoginState.loggedOut;
         _guestBookMessages = [];
         _guestBookSubscription?.cancel();
-        _attendingSubscription?.cancel(); // new
+        _attendingSubscription?.cancel();
+        /*_profileSubscription?.cancel();*/
       }
       notifyListeners();
     });
@@ -80,12 +97,20 @@ class ApplicationState extends ChangeNotifier {
   String? _email;
   String? get email => _email;
 
+  String? _uid;
+  String? get uid => _uid;
+
+  StreamSubscription<DocumentSnapshot>? _profileSubscription;
   StreamSubscription<QuerySnapshot>? _guestBookSubscription;
   List<GuestBookMessage> _guestBookMessages = [];
   List<GuestBookMessage> get guestBookMessages => _guestBookMessages;
 
   int _attendees = 0;
   int get attendees => _attendees;
+
+  Profile? _profile;
+  Profile? get profile => _profile;
+
 
   Attending _attending = Attending.unknown;
   StreamSubscription<DocumentSnapshot>? _attendingSubscription;
@@ -151,6 +176,8 @@ class ApplicationState extends ChangeNotifier {
       var credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
       await credential.user!.updateProfile(displayName: displayName);
+     // await updateUserProfile(displayName, [], [], [], Preferences());
+
     } on FirebaseAuthException catch (e) {
       errorCallback(e);
     }
@@ -159,6 +186,21 @@ class ApplicationState extends ChangeNotifier {
   void signOut() {
     FirebaseAuth.instance.signOut();
   }
+
+  Future<void> updateUserProfile(String nickname, List<String> genres, List<String> authors, List<Book> books, Preferences preferences) {
+    if (_loginState != ApplicationLoginState.loggedIn) {
+      throw Exception('Must be logged in');
+    }
+    return profileCollection.doc(this.uid).set({
+      'nickname': nickname,
+      'genres':genres,
+      'authors': authors,
+      'books':books,
+      'preferences':preferences
+    });
+
+  }
+
 
   Future<DocumentReference> addMessageToGuestBook(String message) {
     if (_loginState != ApplicationLoginState.loggedIn) {
