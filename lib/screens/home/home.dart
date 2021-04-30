@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:coffeeshoppe/screens/authentication/authentication.dart';
 import 'package:coffeeshoppe/shared/applicationloginstate.dart';
 import 'package:coffeeshoppe/shared/applicationstate.dart';
+import 'package:coffeeshoppe/shared/constants.dart';
 import 'package:coffeeshoppe/shared/guestbook.dart';
 import 'package:coffeeshoppe/shared/widgets.dart';
 import 'package:coffeeshoppe/shared/yesnoselection.dart';
@@ -13,13 +14,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatelessWidget {
-  HomePage({Key? key}) : super(key: key);
+  //HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Firebase Meetup'),
+        title: Text(APP_TITLE),
       ),
       body: ListView(
         children: <Widget>[
