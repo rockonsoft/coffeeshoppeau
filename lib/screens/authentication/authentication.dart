@@ -1,4 +1,5 @@
 import 'package:coffeeshoppe/shared/applicationloginstate.dart';
+import 'package:coffeeshoppe/shared/constants.dart';
 import 'package:flutter/material.dart';
 
 import '../../shared/widgets.dart';
@@ -40,7 +41,7 @@ class Authentication extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (loginState) {
       case ApplicationLoginState.loggedOut:
-        return Row(
+               return Row(
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 24, bottom: 8),
@@ -48,7 +49,7 @@ class Authentication extends StatelessWidget {
                 onPressed: () {
                   startLoginFlow();
                 },
-                child: Text('RSVP'),
+                child: Text('Login'),
               ),
             ),
           ],
